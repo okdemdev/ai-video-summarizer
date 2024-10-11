@@ -7,7 +7,7 @@ import FilePasteIcon from '@/logos/file-paste-stroke-rounded';
 
 export const navLinks = [
   {
-    name: 'Dashboard',
+    name: 'Home',
     href: '/dashboard',
     icon: Home07Icon,
   },
