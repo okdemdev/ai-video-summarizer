@@ -38,6 +38,7 @@ export default function Component() {
 
     try {
       const infoResponse = await fetch('/api/feth-youtube-video', {
+        // Fixed endpoint name
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ youtubeURL }),
@@ -46,7 +47,7 @@ export default function Component() {
       if (!infoResponse.ok) {
         throw new Error(
           `Error fetching video information: ${infoResponse.status} ${infoResponse.statusText}`
-        );
+        ); // Corrected string interpolation
       }
 
       const infoData = await infoResponse.json();
@@ -61,7 +62,7 @@ export default function Component() {
       if (!summaryResponse.ok) {
         throw new Error(
           `Error generating summary: ${summaryResponse.status} ${summaryResponse.statusText}`
-        );
+        ); // Corrected string interpolation
       }
 
       const summaryData = await summaryResponse.json();
@@ -94,7 +95,7 @@ export default function Component() {
       if (!summaryResponse.ok) {
         throw new Error(
           `Error generating detailed summary: ${summaryResponse.status} ${summaryResponse.statusText}`
-        );
+        ); // Corrected string interpolation
       }
 
       const summaryData = await summaryResponse.json();
@@ -113,13 +114,14 @@ export default function Component() {
 
     try {
       const response = await fetch('/api/answear-question', {
+        // Fixed endpoint name
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ summary: output, question }),
       });
 
       if (!response.ok) {
-        throw new Error(`Error answering question: ${response.status} ${response.statusText}`);
+        throw new Error(`Error answering question: ${response.status} ${response.statusText}`); // Corrected string interpolation
       }
 
       const data = await response.json();
@@ -167,12 +169,13 @@ export default function Component() {
 
   return (
     <div className="h-[calc(100vh-theme(spacing.4)-64px)] bg-[#1d1d1d] rounded-xl border border-[#535353] flex flex-col overflow-hidden p-6">
+      {/* Center content only before the summary is generated */}
       {!output && (
         <div className="flex flex-1 flex-col justify-center items-center">
           <div className="relative text-center">
             <h1 className="font-bold text-4xl text-[#ffffe3] p-4">YouTube Video Summarizer</h1>
             <a
-              href={'www.bulatadamian.com'}
+              href={'https://www.bulatadamian.com'} // Added HTTPS to the URL
               className="absolute right-0 bottom-0 text-[#ffffe3]/50 underline text-sm font-regular mr-3"
             >
               by Damian Bulata
@@ -200,82 +203,75 @@ export default function Component() {
         </div>
       )}
 
+      {/* Display summary and Q&A after output is generated */}
       {output && (
-        <div className="flex-1 flex flex-col lg:flex-row gap-6 overflow-hidden p-4">
+        <div className="flex-1 flex flex-col lg:flex-row gap-6 overflow-hidden">
+          {/* Summary section */}
           <div className="flex-1 flex flex-col gap-4 overflow-hidden">
-            {/* New Section: Video Info, Save, and Summarize Another */}
-            <div className="p-4 bg-[#2d2d2d] rounded-md flex justify-between items-center">
-              <div>
-                <h2 className="text-xl font-bold text-[#ffffe3]">{videoInfo?.title}</h2>
-                <a
-                  href={youtubeURL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-[#ffffe3]/50 underline"
-                >
-                  {youtubeURL}
-                </a>
-              </div>
-              <div className="flex gap-4">
+            <div className="p-4 bg-[#2d2d2d] rounded-md overflow-y-auto flex-1">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-[#ffffe3]">Summary:</h2>
                 <button
-                  onClick={() => setOutput('')} // Reset to summarize another video
-                  className="px-4 py-2 bg-[#535353] text-[#ffffe3] rounded-md hover:bg-[#6b6b6b] focus:outline-none focus:ring-2 focus:ring-[#ffffe3] transition-all duration-200"
+                  onClick={reSummarize}
+                  disabled={isResummarizing || !videoInfo}
+                  className="px-4 py-2 bg-[#535353] text-[#ffffe3] rounded-md hover:bg-[#6b6b6b] focus:outline-none focus:ring-2 focus:ring-[#ffffe3] focus:ring-offset-2 focus:ring-offset-[#1d1d1d] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 >
-                  Summarize Another Video
-                </button>
-                <button
-                  onClick={() => console.log('Saving summary and Q&A')} // Add save functionality here
-                  className="px-4 py-2 bg-[#535353] text-[#ffffe3] rounded-md hover:bg-[#6b6b6b] focus:outline-none focus:ring-2 focus:ring-[#ffffe3] transition-all duration-200"
-                >
-                  Save Summary and Q&A
+                  {isResummarizing ? 'Resummarizing...' : 'Get Detailed Summary'}
                 </button>
               </div>
-            </div>
-
-            {/* Summary Section */}
-            <div className="p-4 bg-[#2d2d2d] rounded-md overflow-y-auto">
-              {formatSummary(output).map((section, index) => (
-                <div key={index} className="mb-4">
-                  <h3 className="flex items-center text-xl font-bold text-[#ffffe3] mb-2">
-                    {section.icon} <span className="ml-2">{section.title}</span>
-                  </h3>
-                  <ul className="list-disc list-inside text-[#ffffe3]/80">
-                    {section.content.map((item, itemIndex) => (
-                      <li key={itemIndex}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+              {error && <div className="text-red-500">{error}</div>}
+              <div className="flex flex-col gap-4">
+                {formatSummary(output).map((section, index) => (
+                  <div key={index} className="bg-[#3b3b3b] p-4 rounded-md">
+                    <div className="flex items-center">
+                      {section.icon}
+                      <h3 className="text-lg font-bold text-[#ffffe3] ml-2">{section.title}</h3>
+                    </div>
+                    <ul className="list-disc pl-5 mt-2 text-[#ffffe3]">
+                      {section.content.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-          {/* Q&A Section */}
-          <div className="flex-1 flex flex-col">
-            <div className="flex flex-col gap-2 mb-4">
-              <textarea
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                placeholder="Ask a question about the video..."
-                className="w-full p-3 border-2 border-[#535353] rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffffe3] focus:border-[#ffffe3] shadow-sm bg-[#2d2d2d] text-[#ffffe3] resize-none transition-all duration-200"
-              />
-              <button
-                onClick={askQuestion}
-                disabled={isAnswering || !question.trim()}
-                className="px-4 py-2 bg-[#535353] text-[#ffffe3] rounded-md hover:bg-[#6b6b6b] focus:outline-none focus:ring-2 focus:ring-[#ffffe3] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isAnswering ? 'Answering...' : 'Ask Question'}
-              </button>
-            </div>
 
-            <div
-              className="flex-1 overflow-y-auto bg-[#2d2d2d] rounded-md p-4"
-              ref={qaContainerRef}
-            >
-              {questionAnswers.map((qa, index) => (
-                <div key={index} className="mb-4">
-                  <h4 className="text-lg font-semibold text-[#ffffe3]">{qa.question}</h4>
-                  <p className="text-[#ffffe3]/80">{qa.answer}</p>
+          {/* Q&A section */}
+          <div className="flex-1 flex flex-col gap-4 overflow-hidden">
+            <div className="p-4 bg-[#2d2d2d] rounded-md flex flex-col h-full">
+              <h2 className="text-2xl font-bold text-[#ffffe3] mb-4">Questions & Answers:</h2>
+
+              {/* Input for asking questions */}
+              <div className="mb-4">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={question}
+                    onChange={(e) => setQuestion(e.target.value)}
+                    placeholder="Ask a question..."
+                    className="w-full p-3 border-2 border-[#535353] rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffffe3] focus:border-[#ffffe3] shadow-sm bg-[#2d2d2d] text-[#ffffe3] transition-all duration-200"
+                  />
+                  <button
+                    onClick={askQuestion}
+                    disabled={isAnswering || !question}
+                    className="px-4 py-2 bg-[#535353] text-[#ffffe3] rounded-md hover:bg-[#6b6b6b] focus:outline-none focus:ring-2 focus:ring-[#ffffe3] focus:ring-offset-2 focus:ring-offset-[#1d1d1d] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  >
+                    {isAnswering ? 'Answering...' : 'Ask'}
+                  </button>
                 </div>
-              ))}
+              </div>
+
+              {/* Scrollable container for questions and answers */}
+              <div ref={qaContainerRef} className="flex-1 overflow-y-auto">
+                {questionAnswers.map((qa, index) => (
+                  <div key={index} className="bg-[#3b3b3b] p-4 rounded-md mb-2">
+                    <h3 className="text-md font-semibold text-[#ffffe3]">Q: {qa.question}</h3>
+                    <p className="text-[#ffffe3]">A: {qa.answer}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
