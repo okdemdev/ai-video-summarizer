@@ -67,7 +67,7 @@ export default function Component() {
 
       const summaryData = await summaryResponse.json();
       setOutput(summaryData.output);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in generateSummary:', error);
       setError(error.message || 'An unexpected error occurred. Please try again.');
     } finally {
@@ -100,7 +100,7 @@ export default function Component() {
 
       const summaryData = await summaryResponse.json();
       setOutput(summaryData.output);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in reSummarize:', error);
       setError(error.message || 'An unexpected error occurred. Please try again.');
     } finally {
@@ -127,7 +127,7 @@ export default function Component() {
       const data = await response.json();
       setQuestionAnswers((prevQA) => [...prevQA, { question, answer: data.answer }]);
       setQuestion('');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in askQuestion:', error);
       setError(error.message || 'An unexpected error occurred. Please try again.');
     } finally {
@@ -189,7 +189,7 @@ export default function Component() {
                 value={youtubeURL}
                 onChange={(e) => setYoutubeURL(e.target.value)}
                 placeholder="Paste YouTube URL here..."
-                className="w-full p-3 pr-28 border-2 border-[#535353] rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffffe3] focus:border-[#ffffe3] shadow-sm bg-[#2d2d2d] text-[#ffffe3] transition-all duration-200"
+                className="w-full p-3 pr-28 border-2 border-[#535353] rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffffe3] focus:border-[#ffffe3] shadow-sm bg-[#2d2d2d] text-[#ffffe3] transition-all duration-200 placeholder:text-[#ffffe3]/50"
               />
               <button
                 onClick={generateSummary}
@@ -251,7 +251,7 @@ export default function Component() {
                     value={question}
                     onChange={(e) => setQuestion(e.target.value)}
                     placeholder="Ask a question..."
-                    className="w-full p-3 border-2 border-[#535353] rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffffe3] focus:border-[#ffffe3] shadow-sm bg-[#2d2d2d] text-[#ffffe3] transition-all duration-200"
+                    className="w-full p-3 border-2 border-[#535353] rounded-md focus:outline-none focus:ring-2 focus:ring-[#ffffe3] focus:border-[#ffffe3] shadow-sm bg-[#2d2d2d] text-[#ffffe3] transition-all duration-200 placeholder:text-[#ffffe3]/50"
                   />
                   <button
                     onClick={askQuestion}
